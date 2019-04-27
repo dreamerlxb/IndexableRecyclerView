@@ -1,7 +1,7 @@
 package me.yokeyword.sample.contact;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +50,7 @@ public class ContactAdapter extends IndexableAdapter<UserEntity> {
 
         public IndexVH(View itemView) {
             super(itemView);
-            tv = (TextView) itemView.findViewById(R.id.tv_index);
+            tv = itemView.findViewById(R.id.tv_index);
         }
     }
 
@@ -59,8 +59,8 @@ public class ContactAdapter extends IndexableAdapter<UserEntity> {
 
         public ContentVH(View itemView) {
             super(itemView);
-            tvName = (TextView) itemView.findViewById(R.id.tv_name);
-            tvMobile = (TextView) itemView.findViewById(R.id.tv_mobile);
+            tvName = itemView.findViewById(R.id.tv_name);
+            tvMobile = itemView.findViewById(R.id.tv_mobile);
         }
     }
 }

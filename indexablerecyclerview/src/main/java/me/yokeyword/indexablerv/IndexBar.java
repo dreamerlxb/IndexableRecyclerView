@@ -39,11 +39,7 @@ class IndexBar extends View {
     }
 
     void init(Drawable barBg, int barTextColor, int barFocusTextColor, float barTextSize, float textSpace) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            setBackground(barBg);
-        } else {
-            setBackgroundDrawable(barBg);
-        }
+        setBackground(barBg);
 
         this.mTextSpace = textSpace;
 
@@ -84,7 +80,9 @@ class IndexBar extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (mIndexList.size() == 0) return;
+        if (mIndexList.size() == 0) {
+            return;
+        }
 
         mIndexHeight = ((float) getHeight()) / mIndexList.size();
 
@@ -98,7 +96,9 @@ class IndexBar extends View {
     }
 
     int getPositionForPointY(float y) {
-        if (mIndexList.size() <= 0) return -1;
+        if (mIndexList.size() <= 0) {
+            return -1;
+        }
 
         int position = (int) (y / mIndexHeight);
 
@@ -175,8 +175,9 @@ class IndexBar extends View {
     }
 
     void setSelection(int firstVisibleItemPosition) {
-        if (mDatas == null || mDatas.size() <= firstVisibleItemPosition || firstVisibleItemPosition < 0)
+        if (mDatas == null || mDatas.size() <= firstVisibleItemPosition || firstVisibleItemPosition < 0) {
             return;
+        }
         EntityWrapper wrapper = mDatas.get(firstVisibleItemPosition);
         int position = mIndexList.indexOf(wrapper.getIndex());
 

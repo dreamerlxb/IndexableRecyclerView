@@ -1,6 +1,8 @@
 package me.yokeyword.indexablerv;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,7 @@ class RealAdapter<T extends IndexableEntity> extends RecyclerView.Adapter<Recycl
         notifyDataSetChanged();
     }
 
-    void removeIndexableHeaderAdapter(IndexableHeaderAdapter adapter) {
+    void removeIndexableHeaderAdapter(IndexableHeaderAdapter<T> adapter) {
         mHeaderDatasList.removeAll(adapter.getDatas());
         if (mDatasList.size() > 0) {
             mDatasList.removeAll(adapter.getDatas());
@@ -53,7 +55,7 @@ class RealAdapter<T extends IndexableEntity> extends RecyclerView.Adapter<Recycl
         notifyDataSetChanged();
     }
 
-    void removeIndexableFooterAdapter(IndexableFooterAdapter adapter) {
+    void removeIndexableFooterAdapter(IndexableFooterAdapter<T> adapter) {
         mFooterDatasList.removeAll(adapter.getDatas());
         if (mDatasList.size() > 0) {
             mDatasList.removeAll(adapter.getDatas());
@@ -82,8 +84,9 @@ class RealAdapter<T extends IndexableEntity> extends RecyclerView.Adapter<Recycl
         return mDatasList.get(position).getItemType();
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
         final RecyclerView.ViewHolder holder;
 
         if (viewType == EntityWrapper.TYPE_TITLE) {
@@ -100,78 +103,74 @@ class RealAdapter<T extends IndexableEntity> extends RecyclerView.Adapter<Recycl
             holder = adapter.onCreateContentViewHolder(parent);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = holder.getAdapterPosition();
-                if (position == RecyclerView.NO_POSITION) return;
-                EntityWrapper<T> wrapper = mDatasList.get(position);
-                if (viewType == EntityWrapper.TYPE_TITLE) {
-                    if (mTitleClickListener != null) {
-                        mTitleClickListener.onItemClick(v, position, wrapper.getIndexTitle());
-                    }
-                } else if (viewType == EntityWrapper.TYPE_CONTENT) {
-                    if (mContentClickListener != null) {
-                        mContentClickListener.onItemClick(v, wrapper.getOriginalPosition(), position, wrapper.getData());
-                    }
+        holder.itemView.setOnClickListener(v -> {
+            int position = holder.getAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
+            EntityWrapper<T> wrapper = mDatasList.get(position);
+            if (viewType == EntityWrapper.TYPE_TITLE) {
+                if (mTitleClickListener != null) {
+                    mTitleClickListener.onItemClick(v, position, wrapper.getIndexTitle());
+                }
+            } else if (viewType == EntityWrapper.TYPE_CONTENT) {
+                if (mContentClickListener != null) {
+                    mContentClickListener.onItemClick(v, wrapper.getOriginalPosition(), position, wrapper.getData());
+                }
+            } else {
+                AbstractHeaderFooterAdapter adapter;
+                if (mHeaderAdapterMap.indexOfKey(viewType) >= 0) {
+                    adapter = mHeaderAdapterMap.get(viewType);
                 } else {
-                    AbstractHeaderFooterAdapter adapter;
-                    if (mHeaderAdapterMap.indexOfKey(viewType) >= 0) {
-                        adapter = mHeaderAdapterMap.get(viewType);
-                    } else {
-                        adapter = mFooterAdapterMap.get(viewType);
-                    }
+                    adapter = mFooterAdapterMap.get(viewType);
+                }
 
-                    if (adapter != null) {
-                        AbstractHeaderFooterAdapter.OnItemClickListener listener = adapter.getOnItemClickListener();
-                        if (listener != null) {
-                            listener.onItemClick(v, position, wrapper.getData());
-                        }
+                if (adapter != null) {
+                    AbstractHeaderFooterAdapter.OnItemClickListener listener = adapter.getOnItemClickListener();
+                    if (listener != null) {
+                        listener.onItemClick(v, position, wrapper.getData());
                     }
                 }
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                int position = holder.getAdapterPosition();
-                EntityWrapper<T> wrapper = mDatasList.get(position);
-                if (viewType == EntityWrapper.TYPE_TITLE) {
-                    if (mTitleLongClickListener != null) {
-                        return mTitleLongClickListener.onItemLongClick(v, position, wrapper.getIndexTitle());
-                    } else {
-                        return true;
-                    }
-                } else if (viewType == EntityWrapper.TYPE_CONTENT) {
-                    if (mContentLongClickListener != null) {
-                        return mContentLongClickListener.onItemLongClick(v, wrapper.getOriginalPosition(), position, wrapper.getData());
-                    } else {
-                        return true;
-                    }
+        holder.itemView.setOnLongClickListener(v -> {
+            int position = holder.getAdapterPosition();
+            EntityWrapper<T> wrapper = mDatasList.get(position);
+            if (viewType == EntityWrapper.TYPE_TITLE) {
+                if (mTitleLongClickListener != null) {
+                    return mTitleLongClickListener.onItemLongClick(v, position, wrapper.getIndexTitle());
                 } else {
-                    AbstractHeaderFooterAdapter adapter;
-                    if (mHeaderAdapterMap.indexOfKey(viewType) >= 0) {
-                        adapter = mHeaderAdapterMap.get(viewType);
-                    } else {
-                        adapter = mFooterAdapterMap.get(viewType);
-                    }
+                    return true;
+                }
+            } else if (viewType == EntityWrapper.TYPE_CONTENT) {
+                if (mContentLongClickListener != null) {
+                    return mContentLongClickListener.onItemLongClick(v, wrapper.getOriginalPosition(), position, wrapper.getData());
+                } else {
+                    return true;
+                }
+            } else {
+                AbstractHeaderFooterAdapter adapter;
+                if (mHeaderAdapterMap.indexOfKey(viewType) >= 0) {
+                    adapter = mHeaderAdapterMap.get(viewType);
+                } else {
+                    adapter = mFooterAdapterMap.get(viewType);
+                }
 
-                    if (adapter != null) {
-                        AbstractHeaderFooterAdapter.OnItemLongClickListener listener = adapter.getOnItemLongClickListener();
-                        if (listener != null) {
-                            return listener.onItemLongClick(v, position, wrapper.getData());
-                        }
+                if (adapter != null) {
+                    AbstractHeaderFooterAdapter.OnItemLongClickListener listener = adapter.getOnItemLongClickListener();
+                    if (listener != null) {
+                        return listener.onItemLongClick(v, position, wrapper.getData());
                     }
                 }
-                return false;
             }
+            return false;
         });
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         EntityWrapper<T> item = mDatasList.get(position);
 
         int viewType = getItemViewType(position);
@@ -235,10 +234,10 @@ class RealAdapter<T extends IndexableEntity> extends RecyclerView.Adapter<Recycl
     }
 
     void removeHeaderFooterData(boolean header, EntityWrapper data) {
-        processremoveHeaderFooterData(header ? mHeaderDatasList : mFooterDatasList, data);
+        processRemoveHeaderFooterData(header ? mHeaderDatasList : mFooterDatasList, data);
     }
 
-    private void processremoveHeaderFooterData(ArrayList<EntityWrapper<T>> list, EntityWrapper data) {
+    private void processRemoveHeaderFooterData(ArrayList<EntityWrapper<T>> list, EntityWrapper data) {
         for (int i = 0; i < list.size(); i++) {
             EntityWrapper wrapper = list.get(i);
             if (wrapper == data) {

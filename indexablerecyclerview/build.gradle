@@ -1,20 +1,24 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 24
+        minSdkVersion 19
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    compile 'com.github.promeg:tinypinyin:2.0.3'
-    compile 'com.github.promeg:tinypinyin-lexicons-android-cncity:2.0.3'
-    provided 'com.android.support:appcompat-v7:25.3.1'
-    provided 'com.android.support:recyclerview-v7:25.3.1'
+    api 'com.github.promeg:tinypinyin:2.0.3'
+    api 'com.github.promeg:tinypinyin-lexicons-android-cncity:2.0.3'
+    compileOnly 'androidx.appcompat:appcompat:1.0.2'
+    compileOnly 'androidx.recyclerview:recyclerview:1.0.0'
 }

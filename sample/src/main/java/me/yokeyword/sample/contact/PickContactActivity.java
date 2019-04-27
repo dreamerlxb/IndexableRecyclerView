@@ -2,11 +2,10 @@ package me.yokeyword.sample.contact;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.yokeyword.indexablerv.IndexableAdapter;
 import me.yokeyword.indexablerv.IndexableHeaderAdapter;
 import me.yokeyword.indexablerv.IndexableLayout;
 import me.yokeyword.indexablerv.SimpleFooterAdapter;
@@ -55,23 +53,15 @@ public class PickContactActivity extends AppCompatActivity {
         indexableLayout.setCompareMode(IndexableLayout.MODE_ALL_LETTERS);
 
         // set Listener
-        mAdapter.setOnItemContentClickListener(new IndexableAdapter.OnItemContentClickListener<UserEntity>() {
-            @Override
-            public void onItemClick(View v, int originalPosition, int currentPosition, UserEntity entity) {
-                if (originalPosition >= 0) {
-                    ToastUtil.showShort(PickContactActivity.this, "选中:" + entity.getNick() + "  当前位置:" + currentPosition + "  原始所在数组位置:" + originalPosition);
-                } else {
-                    ToastUtil.showShort(PickContactActivity.this, "选中Header/Footer:" + entity.getNick() + "  当前位置:" + currentPosition);
-                }
+        mAdapter.setOnItemContentClickListener((v, originalPosition, currentPosition, entity) -> {
+            if (originalPosition >= 0) {
+                ToastUtil.showShort(PickContactActivity.this, "选中:" + entity.getNick() + "  当前位置:" + currentPosition + "  原始所在数组位置:" + originalPosition);
+            } else {
+                ToastUtil.showShort(PickContactActivity.this, "选中Header/Footer:" + entity.getNick() + "  当前位置:" + currentPosition);
             }
         });
 
-        mAdapter.setOnItemTitleClickListener(new IndexableAdapter.OnItemTitleClickListener() {
-            @Override
-            public void onItemClick(View v, int currentPosition, String indexTitle) {
-                ToastUtil.showShort(PickContactActivity.this, "选中:" + indexTitle + "  当前位置:" + currentPosition);
-            }
-        });
+        mAdapter.setOnItemTitleClickListener((v, currentPosition, indexTitle) -> ToastUtil.showShort(PickContactActivity.this, "选中:" + indexTitle + "  当前位置:" + currentPosition));
 
         // 添加我关心的人
         indexableLayout.addHeaderAdapter(new SimpleHeaderAdapter<>(mAdapter, "☆", "我关心的", initFavDatas()));
@@ -80,12 +70,7 @@ public class PickContactActivity extends AppCompatActivity {
         mMenuHeaderAdapter = new MenuHeaderAdapter("↑", null, initMenuDatas());
         // 添加菜单
         indexableLayout.addHeaderAdapter(mMenuHeaderAdapter);
-        mMenuHeaderAdapter.setOnItemHeaderClickListener(new IndexableHeaderAdapter.OnItemHeaderClickListener<MenuEntity>() {
-            @Override
-            public void onItemClick(View v, int currentPosition, MenuEntity entity) {
-                ToastUtil.showShort(PickContactActivity.this, entity.getMenuTitle());
-            }
-        });
+        mMenuHeaderAdapter.setOnItemHeaderClickListener((v, currentPosition, entity) -> ToastUtil.showShort(PickContactActivity.this, entity.getMenuTitle()));
 
         // 这里BannerView只有一个Item, 添加一个长度为1的任意List作为第三个参数
         List<String> bannerList = new ArrayList<>();
@@ -131,8 +116,8 @@ public class PickContactActivity extends AppCompatActivity {
 
             public VH(View itemView) {
                 super(itemView);
-                tv = (TextView) itemView.findViewById(R.id.tv_title);
-                img = (ImageView) itemView.findViewById(R.id.img);
+                tv = itemView.findViewById(R.id.tv_title);
+                img = itemView.findViewById(R.id.img);
             }
         }
     }
@@ -156,12 +141,7 @@ public class PickContactActivity extends AppCompatActivity {
         public RecyclerView.ViewHolder onCreateContentViewHolder(ViewGroup parent) {
             View view = LayoutInflater.from(PickContactActivity.this).inflate(R.layout.header_contact_banner, parent, false);
             VH holder = new VH(view);
-            holder.img.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ToastUtil.showShort(PickContactActivity.this, "---点击了Banner---");
-                }
-            });
+            holder.img.setOnClickListener(v -> ToastUtil.showShort(PickContactActivity.this, "---点击了Banner---"));
             return holder;
         }
 
@@ -175,7 +155,7 @@ public class PickContactActivity extends AppCompatActivity {
 
             public VH(View itemView) {
                 super(itemView);
-                img = (ImageView) itemView.findViewById(R.id.img);
+                img = itemView.findViewById(R.id.img);
             }
         }
     }

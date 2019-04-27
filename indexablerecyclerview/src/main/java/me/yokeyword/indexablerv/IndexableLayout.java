@@ -1,5 +1,6 @@
 package me.yokeyword.indexablerv;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -8,13 +9,14 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.IntDef;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -360,8 +362,9 @@ public class IndexableLayout extends FrameLayout {
      * @param layoutManager One of LinearLayoutManager and GridLayoutManager
      */
     public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {
-        if (layoutManager == null)
+        if (layoutManager == null) {
             throw new NullPointerException("LayoutManager == null");
+        }
 
         mLayoutManager = layoutManager;
         if (layoutManager instanceof GridLayoutManager) {
@@ -383,63 +386,76 @@ public class IndexableLayout extends FrameLayout {
         mRecy.setLayoutManager(mLayoutManager);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initListener() {
         mRecy.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 processScrollListener();
             }
         });
 
-        mIndexBar.setOnTouchListener(new OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int touchPos = mIndexBar.getPositionForPointY(event.getY());
-                if (touchPos < 0) return true;
-
-                if (!(mLayoutManager instanceof LinearLayoutManager)) return true;
-                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mLayoutManager;
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                    case MotionEvent.ACTION_MOVE:
-                        showOverlayView(event.getY(), touchPos);
-
-                        if (touchPos != mIndexBar.getSelectionPosition()) {
-                            mIndexBar.setSelectionPosition(touchPos);
-
-                            if (touchPos == 0) {
-                                linearLayoutManager.scrollToPositionWithOffset(0, 0);
-                            } else {
-                                linearLayoutManager.scrollToPositionWithOffset(mIndexBar.getFirstRecyclerViewPositionBySelection(), 0);
-                            }
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        if (mCenterOverlay != null) mCenterOverlay.setVisibility(GONE);
-                        if (mMDOverlay != null) mMDOverlay.setVisibility(GONE);
-                        break;
-                }
+        mIndexBar.setOnTouchListener((v, event) -> {
+            int touchPos = mIndexBar.getPositionForPointY(event.getY());
+            if (touchPos < 0) {
                 return true;
             }
+
+            if (!(mLayoutManager instanceof LinearLayoutManager)) {
+                return true;
+            }
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mLayoutManager;
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_MOVE:
+                    showOverlayView(event.getY(), touchPos);
+
+                    if (touchPos != mIndexBar.getSelectionPosition()) {
+                        mIndexBar.setSelectionPosition(touchPos);
+
+                        if (touchPos == 0) {
+                            linearLayoutManager.scrollToPositionWithOffset(0, 0);
+                        } else {
+                            linearLayoutManager.scrollToPositionWithOffset(mIndexBar.getFirstRecyclerViewPositionBySelection(), 0);
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    if (mCenterOverlay != null) {
+                        mCenterOverlay.setVisibility(GONE);
+                    }
+                    if (mMDOverlay != null) {
+                        mMDOverlay.setVisibility(GONE);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return true;
         });
     }
 
     private void processScrollListener() {
-        if (!(mLayoutManager instanceof LinearLayoutManager)) return;
+        if (!(mLayoutManager instanceof LinearLayoutManager)) {
+            return;
+        }
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mLayoutManager;
 
         int firstItemPosition;
         firstItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-        if (firstItemPosition == RecyclerView.NO_POSITION) return;
+        if (firstItemPosition == RecyclerView.NO_POSITION) {
+            return;
+        }
 
         mIndexBar.setSelection(firstItemPosition);
 
-        if (!mSticyEnable) return;
+        if (!mSticyEnable) {
+            return;
+        }
         ArrayList<EntityWrapper> list = mRealAdapter.getItems();
         if (mStickyViewHolder != null && list.size() > firstItemPosition) {
             EntityWrapper wrapper = list.get(firstItemPosition);
@@ -485,7 +501,9 @@ public class IndexableLayout extends FrameLayout {
     private void processScroll(LinearLayoutManager layoutManager, ArrayList<EntityWrapper> list, int position, String title) {
         EntityWrapper nextWrapper = list.get(position);
         View nextTitleView = layoutManager.findViewByPosition(position);
-        if (nextTitleView == null) return;
+        if (nextTitleView == null) {
+            return;
+        }
         if (nextWrapper.getItemType() == EntityWrapper.TYPE_TITLE) {
             if (nextTitleView.getTop() <= mStickyViewHolder.itemView.getHeight() && title != null) {
                 mStickyViewHolder.itemView.setTranslationY(nextTitleView.getTop() - mStickyViewHolder.itemView.getHeight());
@@ -554,7 +572,9 @@ public class IndexableLayout extends FrameLayout {
 
 
     private void showOverlayView(float y, final int touchPos) {
-        if (mIndexBar.getIndexList().size() <= touchPos) return;
+        if (mIndexBar.getIndexList().size() <= touchPos) {
+            return;
+        }
 
         if (mMDOverlay != null) {
             if (mMDOverlay.getVisibility() != VISIBLE) {
@@ -633,26 +653,22 @@ public class IndexableLayout extends FrameLayout {
         if (mFuture != null) {
             mFuture.cancel(true);
         }
-        mFuture = mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                final ArrayList<EntityWrapper> datas = transform(mIndexableAdapter.getItems());
-                if (datas == null) return;
-
-                getSafeHandler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRealAdapter.setDatas(datas);
-                        mIndexBar.setDatas(mShowAllLetter, mRealAdapter.getItems());
-
-                        if (mIndexableAdapter.getIndexCallback() != null) {
-                            mIndexableAdapter.getIndexCallback().onFinished(datas);
-                        }
-
-                        processScrollListener();
-                    }
-                });
+        mFuture = mExecutorService.submit(() -> {
+            final ArrayList<EntityWrapper> datas = transform(mIndexableAdapter.getItems());
+            if (datas == null) {
+                return;
             }
+
+            getSafeHandler().post(() -> {
+                mRealAdapter.setDatas(datas);
+                mIndexBar.setDatas(mShowAllLetter, mRealAdapter.getItems());
+
+                if (mIndexableAdapter.getIndexCallback() != null) {
+                    mIndexableAdapter.getIndexCallback().onFinished(datas);
+                }
+
+                processScrollListener();
+            });
         });
     }
 
@@ -661,16 +677,13 @@ public class IndexableLayout extends FrameLayout {
      */
     private <T extends IndexableEntity> ArrayList<EntityWrapper<T>> transform(final List<T> datas) {
         try {
-            TreeMap<String, List<EntityWrapper<T>>> map = new TreeMap<>(new Comparator<String>() {
-                @Override
-                public int compare(String lhs, String rhs) {
-                    if (lhs.equals(INDEX_SIGN)) {
-                        return rhs.equals(INDEX_SIGN) ? 0 : 1;
-                    } else if (rhs.equals(INDEX_SIGN)) {
-                        return -1;
-                    }
-                    return lhs.compareTo(rhs);
+            TreeMap<String, List<EntityWrapper<T>>> map = new TreeMap<>((lhs, rhs) -> {
+                if (lhs.equals(INDEX_SIGN)) {
+                    return rhs.equals(INDEX_SIGN) ? 0 : 1;
+                } else if (rhs.equals(INDEX_SIGN)) {
+                    return -1;
                 }
+                return lhs.compareTo(rhs);
             });
 
             for (int i = 0; i < datas.size(); i++) {
