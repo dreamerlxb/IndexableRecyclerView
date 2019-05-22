@@ -1,11 +1,13 @@
 package me.yokeyword.sample.city;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +68,7 @@ public class SearchFragment extends Fragment {
     private class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.VH> implements Filterable {
         private List<CityEntity> items = new ArrayList<>();
 
-        public SearchAdapter() {
+        SearchAdapter() {
             items.clear();
             items.addAll(mDatas);
         }
@@ -128,7 +130,7 @@ public class SearchFragment extends Fragment {
         class VH extends RecyclerView.ViewHolder {
             private TextView tvName;
 
-            public VH(View itemView) {
+            VH(View itemView) {
                 super(itemView);
                 tvName = itemView.findViewById(R.id.tv_name);
             }

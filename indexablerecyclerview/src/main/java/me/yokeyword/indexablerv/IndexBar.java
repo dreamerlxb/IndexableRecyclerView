@@ -123,10 +123,11 @@ class IndexBar extends View {
 
     int getFirstRecyclerViewPositionBySelection() {
         String index = mIndexList.get(mSelectionPosition);
+        Integer indexValue = null;
         if (mMapping.containsKey(index)) {
-            return mMapping.get(index);
+            indexValue = mMapping.get(index);
         }
-        return -1;
+        return indexValue == null ? -1 : indexValue;
     }
 
     List<String> getIndexList() {

@@ -99,19 +99,25 @@ public class IndexableLayout extends FrameLayout {
     private HeaderFooterDataObserver<EntityWrapper> mHeaderFooterDataSetObserver = new HeaderFooterDataObserver<EntityWrapper>() {
         @Override
         public void onChanged() {
-            if (mRealAdapter == null) return;
+            if (mRealAdapter == null) {
+                return;
+            }
             mRealAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onAdd(boolean header, EntityWrapper preData, EntityWrapper data) {
-            if (mRealAdapter == null) return;
+            if (mRealAdapter == null) {
+                return;
+            }
             mRealAdapter.addHeaderFooterData(header, preData, data);
         }
 
         @Override
         public void onRemove(boolean header, EntityWrapper data) {
-            if (mRealAdapter == null) return;
+            if (mRealAdapter == null) {
+                return;
+            }
             mRealAdapter.removeHeaderFooterData(header, data);
         }
     };
@@ -634,7 +640,8 @@ public class IndexableLayout extends FrameLayout {
     private void initMDOverlay(int color) {
         mMDOverlay = new AppCompatTextView(mContext);
         mMDOverlay.setBackgroundResource(R.drawable.indexable_bg_md_overlay);
-        ((AppCompatTextView) mMDOverlay).setSupportBackgroundTintList(ColorStateList.valueOf(color));
+//        ((AppCompatTextView) mMDOverlay).setSupportBackgroundTintList(ColorStateList.valueOf(color));
+        ViewCompat.setBackgroundTintList(mMDOverlay, ColorStateList.valueOf(color));
         mMDOverlay.setSingleLine();
         mMDOverlay.setTextColor(Color.WHITE);
         mMDOverlay.setTextSize(38);

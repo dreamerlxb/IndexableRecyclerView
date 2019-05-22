@@ -31,9 +31,9 @@ public abstract class IndexableFooterAdapter<T> extends AbstractHeaderFooterAdap
         this.mLongListener = listener;
     }
 
-    public interface OnItemFooterClickListener<T> extends OnItemClickListener<T>{
+    public interface OnItemFooterClickListener<T> extends OnItemClickListener<T> {
     }
 
-    public interface OnItemFooterLongClickListener<T> extends OnItemLongClickListener<T>{
+    public interface OnItemFooterLongClickListener<T> extends OnItemLongClickListener<T> {
     }
 }

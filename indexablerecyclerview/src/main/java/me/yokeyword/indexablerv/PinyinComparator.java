@@ -28,7 +28,7 @@ class PinyinComparator<T extends IndexableEntity> implements Comparator<EntityWr
 
         String lhsWord = getWord(lhs, index);
         String rhsWord = getWord(rhs, index);
-        while (lhsWord.equals(rhsWord) && !lhsWord.equals("")) {
+        while (lhsWord.equals(rhsWord) && !"".equals(lhsWord)) {
             index++;
             lhsWord = getWord(lhs, index);
             rhsWord = getWord(rhs, index);

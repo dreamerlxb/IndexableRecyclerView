@@ -2,6 +2,7 @@ package me.yokeyword.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import me.yokeyword.sample.city.PickCityActivity;

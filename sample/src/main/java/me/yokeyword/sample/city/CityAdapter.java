@@ -1,7 +1,9 @@
 package me.yokeyword.sample.city;
 
 import android.content.Context;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,7 @@ public class CityAdapter extends IndexableAdapter<CityEntity> {
     private class IndexVH extends RecyclerView.ViewHolder {
         TextView tv;
 
-        public IndexVH(View itemView) {
+        IndexVH(View itemView) {
             super(itemView);
             tv = itemView.findViewById(R.id.tv_index);
         }
@@ -56,7 +58,7 @@ public class CityAdapter extends IndexableAdapter<CityEntity> {
     private class ContentVH extends RecyclerView.ViewHolder {
         TextView tv;
 
-        public ContentVH(View itemView) {
+        ContentVH(View itemView) {
             super(itemView);
             tv = itemView.findViewById(R.id.tv_name);
         }

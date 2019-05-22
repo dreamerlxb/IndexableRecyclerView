@@ -2,10 +2,12 @@ package me.yokeyword.sample.contact;
 
 import android.graphics.Color;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,22 +29,19 @@ import me.yokeyword.sample.ToastUtil;
  * Created by YoKey on 16/10/8.
  */
 public class PickContactActivity extends AppCompatActivity {
-    private ContactAdapter mAdapter;
-    private MenuHeaderAdapter mMenuHeaderAdapter;
-    private BannerHeaderAdapter mBannerHeaderAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_contact);
         getSupportActionBar().setTitle("联系人");
-        IndexableLayout indexableLayout = (IndexableLayout) findViewById(R.id.indexableLayout);
+        IndexableLayout indexableLayout = findViewById(R.id.indexableLayout);
 
         indexableLayout.setLayoutManager(new LinearLayoutManager(this));
 //        indexableLayout.setLayoutManager(new GridLayoutManager(this, 3));
 
         // setAdapter
-        mAdapter = new ContactAdapter(this);
+        ContactAdapter mAdapter = new ContactAdapter(this);
         indexableLayout.setAdapter(mAdapter);
         // set Datas
         mAdapter.setDatas(initDatas());
@@ -67,7 +66,7 @@ public class PickContactActivity extends AppCompatActivity {
         indexableLayout.addHeaderAdapter(new SimpleHeaderAdapter<>(mAdapter, "☆", "我关心的", initFavDatas()));
 
         // 构造函数里3个参数,分别对应 (IndexBar的字母索引, IndexTitle, 数据源), 不想显示哪个就传null, 数据源传null时,代表add一个普通的View
-        mMenuHeaderAdapter = new MenuHeaderAdapter("↑", null, initMenuDatas());
+        MenuHeaderAdapter mMenuHeaderAdapter = new MenuHeaderAdapter("↑", null, initMenuDatas());
         // 添加菜单
         indexableLayout.addHeaderAdapter(mMenuHeaderAdapter);
         mMenuHeaderAdapter.setOnItemHeaderClickListener((v, currentPosition, entity) -> ToastUtil.showShort(PickContactActivity.this, entity.getMenuTitle()));
@@ -75,7 +74,7 @@ public class PickContactActivity extends AppCompatActivity {
         // 这里BannerView只有一个Item, 添加一个长度为1的任意List作为第三个参数
         List<String> bannerList = new ArrayList<>();
         bannerList.add("");
-        mBannerHeaderAdapter = new BannerHeaderAdapter(null, null, bannerList);
+        BannerHeaderAdapter mBannerHeaderAdapter = new BannerHeaderAdapter(null, null, bannerList);
         // 添加 Banner
         indexableLayout.addHeaderAdapter(mBannerHeaderAdapter);
 
@@ -89,7 +88,7 @@ public class PickContactActivity extends AppCompatActivity {
     class MenuHeaderAdapter extends IndexableHeaderAdapter<MenuEntity> {
         private static final int TYPE = 1;
 
-        public MenuHeaderAdapter(String index, String indexTitle, List<MenuEntity> datas) {
+        MenuHeaderAdapter(String index, String indexTitle, List<MenuEntity> datas) {
             super(index, indexTitle, datas);
         }
 
@@ -114,7 +113,7 @@ public class PickContactActivity extends AppCompatActivity {
             private TextView tv;
             private ImageView img;
 
-            public VH(View itemView) {
+            VH(View itemView) {
                 super(itemView);
                 tv = itemView.findViewById(R.id.tv_title);
                 img = itemView.findViewById(R.id.img);
@@ -125,10 +124,10 @@ public class PickContactActivity extends AppCompatActivity {
     /**
      * 自定义的Banner Header
      */
-    class BannerHeaderAdapter extends IndexableHeaderAdapter {
+    class BannerHeaderAdapter extends IndexableHeaderAdapter<String> {
         private static final int TYPE = 2;
 
-        public BannerHeaderAdapter(String index, String indexTitle, List datas) {
+        BannerHeaderAdapter(String index, String indexTitle, List<String> datas) {
             super(index, indexTitle, datas);
         }
 
@@ -146,14 +145,14 @@ public class PickContactActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindContentViewHolder(RecyclerView.ViewHolder holder, Object entity) {
+        public void onBindContentViewHolder(RecyclerView.ViewHolder holder, String entity) {
             // 数据源为null时, 该方法不用实现
         }
 
         private class VH extends RecyclerView.ViewHolder {
             ImageView img;
 
-            public VH(View itemView) {
+            VH(View itemView) {
                 super(itemView);
                 img = itemView.findViewById(R.id.img);
             }

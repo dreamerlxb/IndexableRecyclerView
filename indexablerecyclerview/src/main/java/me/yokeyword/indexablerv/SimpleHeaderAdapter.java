@@ -1,6 +1,7 @@
 package me.yokeyword.indexablerv;
 
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.ViewGroup;
 
 import java.util.List;
